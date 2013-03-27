@@ -33,6 +33,10 @@ namespace Solution
 
             Func<string, IObservable<DictionaryWord[]>> matchInWordNetByPrefix = term => matchInDict("wn", term, "prefix");
 
+            var res = from term in input
+                      from words in matchInWordNetByPrefix(term)
+                      select words;
+
             Application.Run(frm);
 
             Console.WriteLine("Press ENTER to quit ...");
