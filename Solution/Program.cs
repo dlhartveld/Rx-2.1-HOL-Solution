@@ -38,6 +38,5 @@ namespace Solution
                 Application.Run(frm);
             }
         }
-        
     }
 }
