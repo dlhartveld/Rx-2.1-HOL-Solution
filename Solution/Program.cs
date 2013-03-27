@@ -41,7 +41,14 @@ namespace Solution
             var svc = new DictServiceSoapClient("DictServiceSoap");
             var matchInDict = Observable.FromAsyncPattern<string, string, string, DictionaryWord[]> (svc.BeginMatchInDict, svc.EndMatchInDict);
 
-            Func<string, IObservable<DictionaryWord[]>> matchInWordNetByPrefix = term => matchInDict("wn", term, "prefix");
+            Func<string, IObservable<DictionaryWord[]>> matchInWordNetByPrefix =
+                //term => matchInDict("wn", term, "prefix");
+                term =>
+                    Observable.Return(
+                        (from i in Enumerable.Range(0, rand.Next(0, 50))
+                         select new DictionaryWord { Word = term + i })
+                        .ToArray()
+                    ).Delay(TimeSpan.FromSeconds(rand.Next(1, 10)));
 
             var res = (from term in input
                        select matchInWordNetByPrefix(term))
