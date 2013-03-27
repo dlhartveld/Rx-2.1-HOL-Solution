@@ -19,13 +19,15 @@ namespace Solution
             var matchInDict = Observable.FromAsyncPattern<string, string, string, DictionaryWord[]>
                 (svc.BeginMatchInDict, svc.EndMatchInDict);
 
-            var res = matchInDict("wn", "react", "prefix");
+            Func<string, IObservable<DictionaryWord[]>> matchInWordNetByPrefix =
+                term => matchInDict("wn", term, "prefix");
+
+            var res = matchInWordNetByPrefix("react");
             var subscription = res.Subscribe(words =>
             {
                 foreach (var word in words)
                     Console.WriteLine(word.Word);
             });
-
 
             Console.WriteLine("Press ENTER to quit ...");
             Console.ReadLine();
