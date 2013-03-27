@@ -28,6 +28,10 @@ namespace Solution
                 .DistinctUntilChanged()
                 .Do(x => Console.WriteLine(x));
 
+            var svc = new DictServiceSoapClient("DictServiceSoap");
+            var matchInDict = Observable.FromAsyncPattern<string, string, string, DictionaryWord[]> (svc.BeginMatchInDict, svc.EndMatchInDict);
+
+            Func<string, IObservable<DictionaryWord[]>> matchInWordNetByPrefix = term => matchInDict("wn", term, "prefix");
 
             Application.Run(frm);
 
