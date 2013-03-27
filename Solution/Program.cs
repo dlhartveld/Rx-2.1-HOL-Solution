@@ -12,7 +12,17 @@ namespace Solution
     {
         static void Main(string[] args)
         {
-            var frm = new Form();
+            var lbl = new Label();
+            var frm = new Form()
+            {
+                Controls = { lbl }
+            };
+
+            frm.MouseMove += (sender, evArgs) =>
+            {
+                lbl.Text = evArgs.Location.ToString();  // This has become a position-tracking label.
+            };
+
             Application.Run(frm);
         }
     }
