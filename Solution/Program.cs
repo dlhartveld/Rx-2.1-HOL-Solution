@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
@@ -9,8 +10,13 @@ using System.Windows.Forms;
 
 namespace Solution
 {
-    class Program
+    static class Program
     {
+        public static IObservable<T> LogTimestampedValues<T>(this IObservable<T> source, Action<Timestamped<T>> onNext)
+        {
+            return source.Timestamp().Do(onNext).Select(x => x.Value);
+        }
+
         static void Main(string[] args)
         {
             var txt = new TextBox();
@@ -22,17 +28,9 @@ namespace Solution
 
             var input = (from evt in Observable.FromEventPattern(txt, "TextChanged")
                          select ((TextBox)evt.Sender).Text)
-
-                        .Timestamp()
-                        .Do(inp => Console.WriteLine("I: " + inp.Timestamp.Millisecond + " - " + inp.Value))
-                        .Select(x => x.Value)
-
+                        .LogTimestampedValues(x => Console.WriteLine("I: " + x.Timestamp.Millisecond + " - " + x.Value))
                         .Throttle(TimeSpan.FromSeconds(1))
-
-                        .Timestamp()
-                        .Do(inp => Console.WriteLine("T: " + inp.Timestamp.Millisecond + " - " + inp.Value))
-                        .Select(x => x.Value)
-
+                        .LogTimestampedValues(x => Console.WriteLine("T: " + x.Timestamp.Millisecond + " - " + x.Value))
                         .DistinctUntilChanged();
 
             using (input.Subscribe(inp => Console.WriteLine("User wrote: " + inp)))
@@ -40,5 +38,7 @@ namespace Solution
                 Application.Run(frm);
             }
         }
+
+        
     }
 }
