@@ -15,25 +15,14 @@ namespace Solution
     {
         static void Main(string[] args)
         {
-            var svc = new DictServiceSoapClient("DictServiceSoap");
-            var matchInDict = Observable.FromAsyncPattern<string, string, string, DictionaryWord[]>
-                (svc.BeginMatchInDict, svc.EndMatchInDict);
+            var txt = new TextBox();
+            var lst = new ListBox { Top = txt.Height + 10 };
+            var frm = new Form
+            {
+                Controls = { txt, lst }
+            };
 
-            Func<string, IObservable<DictionaryWord[]>> matchInWordNetByPrefix =
-                term => matchInDict("wn", term, "prefix");
-
-            var res = matchInWordNetByPrefix("react");
-            var subscription = res.Subscribe(
-                words =>
-                {
-                    foreach (var word in words)
-                        Console.WriteLine(word.Word);
-                },
-                ex =>
-                {
-                    Console.Error.WriteLine(ex.Message);
-                }
-            );
+            Application.Run(frm);
 
             Console.WriteLine("Press ENTER to quit ...");
             Console.ReadLine();
