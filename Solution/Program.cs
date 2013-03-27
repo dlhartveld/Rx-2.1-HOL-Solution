@@ -20,10 +20,10 @@ namespace Solution
         static void Main(string[] args)
         {
             var txt = new TextBox();
-
+            var lbl = new Label { Left = txt.Width + 20 };
             var frm = new Form
             {
-                Controls = { txt }
+                Controls = { txt, lbl }
             };
 
             var input = (from evt in Observable.FromEventPattern(txt, "TextChanged")
@@ -33,12 +33,11 @@ namespace Solution
                         .LogTimestampedValues(x => Console.WriteLine("T: " + x.Timestamp.Millisecond + " - " + x.Value))
                         .DistinctUntilChanged();
 
-            using (input.Subscribe(inp => Console.WriteLine("User wrote: " + inp)))
+            using (input.Subscribe(inp => lbl.Text = inp))
             {
                 Application.Run(frm);
             }
         }
-
         
     }
 }
