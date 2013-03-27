@@ -23,11 +23,17 @@ namespace Solution
                 term => matchInDict("wn", term, "prefix");
 
             var res = matchInWordNetByPrefix("react");
-            var subscription = res.Subscribe(words =>
-            {
-                foreach (var word in words)
-                    Console.WriteLine(word.Word);
-            });
+            var subscription = res.Subscribe(
+                words =>
+                {
+                    foreach (var word in words)
+                        Console.WriteLine(word.Word);
+                },
+                ex =>
+                {
+                    Console.Error.WriteLine(ex.Message);
+                }
+            );
 
             Console.WriteLine("Press ENTER to quit ...");
             Console.ReadLine();
