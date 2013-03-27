@@ -22,22 +22,20 @@ namespace Solution
                 Controls = { txt, lst }
             };
 
-            // Turn the user input into a tamed sequence of strings.
-            //var textChanged = from evt in Observable.FromEventPattern(txt, "TextChanged")
-            //                  select ((TextBox)evt.Sender).Text;
+            const string INPUT = "reactive";
 
-            //var textChanged = new[] { "reac", "reactive", "bing" }.ToObservable();
+            var rand = new Random();
 
-            // rea, reac, react, reacti, reactiv, reactive
-            var textChanged = (from len in Enumerable.Range(3, 6)
-                               select "reactive".Substring(0, len))
-                              .ToObservable();
-
-            var input = textChanged
-                            .Where(term => term.Length >= 3)
-                            .Throttle(TimeSpan.FromSeconds(1))
-                            .DistinctUntilChanged()
-                            .Do(x => Console.WriteLine("Text changed: {0}", x));
+            var input = Observable.Generate(
+                            3,
+                            len => len <= INPUT.Length,
+                            len => len + 1,
+                            len => INPUT.Substring(0, len),
+                            _ => TimeSpan.FromMilliseconds(rand.Next(200, 1200))
+                        )
+                        .ObserveOn(txt)
+                        .Do(term => txt.Text = term)
+                        .Throttle(TimeSpan.FromSeconds(1));
 
             // Bridge with the web service's MatchInDict method.
             var svc = new DictServiceSoapClient("DictServiceSoap");
