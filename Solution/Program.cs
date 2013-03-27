@@ -20,20 +20,10 @@ namespace Solution
                 Controls = { txt }
             };
 
-            var moves = from evt in Observable.FromEventPattern<MouseEventArgs>(frm, "MouseMove")
-                        select evt.EventArgs.Location;
-
             var input = from evt in Observable.FromEventPattern(txt, "TextChanged")
                         select ((TextBox)evt.Sender).Text;
 
-            var overFirstBisector = from pos in moves
-                                    where pos.X == pos.Y
-                                    select pos;
-
-            var movesSubscription = overFirstBisector.Subscribe(pos => Console.WriteLine("Mouse at: " + pos));
-            var inputSubscription = input.Subscribe(inp => Console.WriteLine("User wrote: {0}", inp));
-
-            using (new CompositeDisposable(movesSubscription, inputSubscription))
+            using (input.Subscribe(inp => Console.WriteLine("User wrote: {0}", inp)))
             {
                 Application.Run(frm);
             }
