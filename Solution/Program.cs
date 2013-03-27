@@ -13,7 +13,7 @@ namespace Solution
         {
             IObservable<int> source;
 
-            IDisposable subscription = source.Select(i -> i + 1).Subscribe(
+            IDisposable subscription = source.Select(i => i + 1).Subscribe(
                 el => Console.WriteLine("Received {0} from source.", el),
                 ex => Console.WriteLine("Source signaled an error: {0}.", ex.Message),
                 () => Console.WriteLine("Source said there are no messages to follow anymore.")
