@@ -12,7 +12,6 @@ namespace Solution
         static void Main(string[] args)
         {
             IObservable<int> source;
-            IObserver<int> handler;
 
             IDisposable subscription = source.Select(i -> i + 1).Subscribe(
                 el => Console.WriteLine("Received {0} from source.", el),
