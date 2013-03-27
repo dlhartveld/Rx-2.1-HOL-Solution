@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Solution
 {
@@ -11,7 +12,8 @@ namespace Solution
     {
         static void Main(string[] args)
         {
-            // Fill in here...
+            var frm = new Form();
+            Application.Run(frm);
         }
     }
 }
