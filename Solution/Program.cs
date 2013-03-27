@@ -23,8 +23,9 @@ namespace Solution
             };
 
             // Turn the user input into a tamed sequence of strings.
-            var textChanged = from evt in Observable.FromEventPattern(txt, "TextChanged")
-                              select ((TextBox)evt.Sender).Text;
+            //var textChanged = from evt in Observable.FromEventPattern(txt, "TextChanged")
+            //                  select ((TextBox)evt.Sender).Text;
+            var textChanged = new[] { "reac", "reactive", "bing" }.ToObservable();
 
             var input = textChanged
                             .Where(term => term.Length >= 3)
