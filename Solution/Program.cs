@@ -22,6 +22,13 @@ namespace Solution
                 Controls = { txt, lst }
             };
 
+            var input = (from evt in Observable.FromEventPattern(txt, "TextChanged")
+                         select ((TextBox)evt.Sender).Text)
+                .Throttle(TimeSpan.FromSeconds(1))
+                .DistinctUntilChanged()
+                .Do(x => Console.WriteLine(x));
+
+
             Application.Run(frm);
 
             Console.WriteLine("Press ENTER to quit ...");
