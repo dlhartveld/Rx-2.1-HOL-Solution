@@ -33,7 +33,7 @@ namespace Solution
                         .LogTimestampedValues(x => Console.WriteLine("T: " + x.Timestamp.Millisecond + " - " + x.Value))
                         .DistinctUntilChanged();
 
-            using (input.Subscribe(inp => lbl.Text = inp))
+            using (input.ObserveOn(lbl).Subscribe(inp => lbl.Text = inp))
             {
                 Application.Run(frm);
             }
