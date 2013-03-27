@@ -38,11 +38,9 @@ namespace Solution
 
             Func<string, IObservable<DictionaryWord[]>> matchInWordNetByPrefix = term => matchInDict("wn", term, "prefix");
 
-            var res = from term in input
-                      from words in matchInWordNetByPrefix(term)
-                                    .Finally(() => Console.WriteLine("Disposed request for " + term))
-                                    .TakeUntil(input)
-                      select words;
+            var res = (from term in input
+                       select matchInWordNetByPrefix(term))
+                      .Switch();
 
             // Synchronize with the UI thread and populate the ListBox or signal an error.
             using (res.ObserveOn(lst).Subscribe(
