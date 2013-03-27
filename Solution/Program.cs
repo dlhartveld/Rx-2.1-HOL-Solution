@@ -26,7 +26,11 @@ namespace Solution
             var input = from evt in Observable.FromEventPattern(txt, "TextChanged")
                         select ((TextBox)evt.Sender).Text;
 
-            var movesSubscription = moves.Subscribe(pos => Console.WriteLine("Mouse at  : {0}", pos));
+            var overFirstBisector = from pos in moves
+                                    where pos.X == pos.Y
+                                    select pos;
+
+            var movesSubscription = overFirstBisector.Subscribe(pos => Console.WriteLine("Mouse at: " + pos));
             var inputSubscription = input.Subscribe(inp => Console.WriteLine("User wrote: {0}", inp));
 
             using (new CompositeDisposable(movesSubscription, inputSubscription))
