@@ -22,13 +22,17 @@ namespace Solution
                 Controls = { txt, lst }
             };
 
-            var input = (from evt in Observable.FromEventPattern(txt, "TextChanged")
-                         select ((TextBox)evt.Sender).Text)
-                .Where(term => term.Length >= 3)
-                //.Throttle(TimeSpan.FromSeconds(1))
-                .DistinctUntilChanged()
-                .Do(x => Console.WriteLine(x));
+            // Turn the user input into a tamed sequence of strings.
+            var textChanged = from evt in Observable.FromEventPattern(txt, "TextChanged")
+                              select ((TextBox)evt.Sender).Text;
 
+            var input = textChanged
+                            .Where(term => term.Length >= 3)
+                            .Throttle(TimeSpan.FromSeconds(1))
+                            .DistinctUntilChanged()
+                            .Do(x => Console.WriteLine("Text changed: {0}", x));
+
+            // Bridge with the web service's MatchInDict method.
             var svc = new DictServiceSoapClient("DictServiceSoap");
             var matchInDict = Observable.FromAsyncPattern<string, string, string, DictionaryWord[]> (svc.BeginMatchInDict, svc.EndMatchInDict);
 
@@ -36,11 +40,13 @@ namespace Solution
 
             var res = from term in input
                       from words in matchInWordNetByPrefix(term)
+                                    .Finally(() => Console.WriteLine("Disposed request for " + term))
+                                    .TakeUntil(input)
                       select words;
 
+            // Synchronize with the UI thread and populate the ListBox or signal an error.
             using (res.ObserveOn(lst).Subscribe(
-                words =>
-                {
+                words => {
                     lst.Items.Clear();
                     lst.Items.AddRange((from word in words select word.Word).ToArray());
                 },
@@ -48,7 +54,7 @@ namespace Solution
             ))
             {
                 Application.Run(frm);
-            }
+            } // Proper disposal happens upon exiting the application.
 
             Console.WriteLine("Press ENTER to quit ...");
             Console.ReadLine();
