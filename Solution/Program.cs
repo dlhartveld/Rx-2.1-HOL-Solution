@@ -16,15 +16,16 @@ namespace Solution
         static void Main(string[] args)
         {
             var svc = new DictServiceSoapClient("DictServiceSoap");
-            svc.BeginMatchInDict("wn", "react", "prefix",
-                iar =>
-                {
-                    var words = svc.EndMatchInDict(iar);
-                    foreach (var word in words)
-                        Console.WriteLine(word.Word);
-                },
-                null
-            );
+            var matchInDict = Observable.FromAsyncPattern<string, string, string, DictionaryWord[]>
+                (svc.BeginMatchInDict, svc.EndMatchInDict);
+
+            var res = matchInDict("wn", "react", "prefix");
+            var subscription = res.Subscribe(words =>
+            {
+                foreach (var word in words)
+                    Console.WriteLine(word.Word);
+            });
+
 
             Console.WriteLine("Press ENTER to quit ...");
             Console.ReadLine();
