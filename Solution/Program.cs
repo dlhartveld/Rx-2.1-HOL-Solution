@@ -20,10 +20,11 @@ namespace Solution
                 Controls = { txt }
             };
 
-            var input = from evt in Observable.FromEventPattern(txt, "TextChanged")
-                        select ((TextBox)evt.Sender).Text;
+            var input = (from evt in Observable.FromEventPattern(txt, "TextChanged")
+                         select ((TextBox)evt.Sender).Text)
+                        .DistinctUntilChanged();
 
-            using (input.Subscribe(inp => Console.WriteLine("User wrote: {0}", inp)))
+            using (input.Subscribe(inp => Console.WriteLine("User wrote: " + inp)))
             {
                 Application.Run(frm);
             }
