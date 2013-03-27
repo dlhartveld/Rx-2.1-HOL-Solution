@@ -20,17 +20,14 @@ namespace Solution
                 Controls = { txt }
             };
 
-            var moves = Observable.FromEventPattern<MouseEventArgs>(frm, "MouseMove");
-            var input = Observable.FromEventPattern(txt, "TextChanged");
+            var moves = from evt in Observable.FromEventPattern<MouseEventArgs>(frm, "MouseMove")
+                        select evt.EventArgs.Location;
 
-            var movesSubscription = moves.Subscribe(evt =>
-            {
-                Console.WriteLine("Mouse at  : {0}", evt.EventArgs.Location);
-            });
-            var inputSubscription = input.Subscribe(evt =>
-            {
-                Console.WriteLine("User wrote: {0}", ((TextBox)evt.Sender).Text);
-            });
+            var input = from evt in Observable.FromEventPattern(txt, "TextChanged")
+                        select ((TextBox)evt.Sender).Text;
+
+            var movesSubscription = moves.Subscribe(pos => Console.WriteLine("Mouse at  : {0}", pos));
+            var inputSubscription = input.Subscribe(inp => Console.WriteLine("User wrote: {0}", inp));
 
             using (new CompositeDisposable(movesSubscription, inputSubscription))
             {
