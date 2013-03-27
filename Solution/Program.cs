@@ -24,7 +24,8 @@ namespace Solution
 
             var input = (from evt in Observable.FromEventPattern(txt, "TextChanged")
                          select ((TextBox)evt.Sender).Text)
-                .Throttle(TimeSpan.FromSeconds(1))
+                .Where(term => term.Length >= 3)
+                //.Throttle(TimeSpan.FromSeconds(1))
                 .DistinctUntilChanged()
                 .Do(x => Console.WriteLine(x));
 
