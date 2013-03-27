@@ -37,7 +37,14 @@ namespace Solution
                       from words in matchInWordNetByPrefix(term)
                       select words;
 
-            Application.Run(frm);
+            using (res.ObserveOn(lst).Subscribe(words =>
+            {
+                lst.Items.Clear();
+                lst.Items.AddRange((from word in words select word.Word).ToArray());
+            }))
+            {
+                Application.Run(frm);
+            }
 
             Console.WriteLine("Press ENTER to quit ...");
             Console.ReadLine();
