@@ -37,11 +37,14 @@ namespace Solution
                       from words in matchInWordNetByPrefix(term)
                       select words;
 
-            using (res.ObserveOn(lst).Subscribe(words =>
-            {
-                lst.Items.Clear();
-                lst.Items.AddRange((from word in words select word.Word).ToArray());
-            }))
+            using (res.ObserveOn(lst).Subscribe(
+                words =>
+                {
+                    lst.Items.Clear();
+                    lst.Items.AddRange((from word in words select word.Word).ToArray());
+                },
+                ex => MessageBox.Show("An error occurred: " + ex.Message, frm.Text, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ))
             {
                 Application.Run(frm);
             }
