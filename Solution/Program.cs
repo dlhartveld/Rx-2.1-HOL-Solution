@@ -13,17 +13,17 @@ namespace Solution
         static void Main(string[] args)
         {
             var lbl = new Label();
-            var frm = new Form()
-            {
+            var frm = new Form {
                 Controls = { lbl }
             };
 
-            frm.MouseMove += (sender, evArgs) =>
+            var moves = Observable.FromEventPattern<MouseEventArgs>(frm, "MouseMove");
+            using (moves.Subscribe(evt => lbl.Text = evt.EventArgs.Location.ToString()))
             {
-                lbl.Text = evArgs.Location.ToString();  // This has become a position-tracking label.
-            };
+                Application.Run(frm);
+            }
 
-            Application.Run(frm);
+            // Proper clean-up just got a lot easier...
         }
     }
 }
